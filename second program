@@ -1,0 +1,227 @@
+from keras import Sequential
+from keras.datasets import mnist
+import numpy as np
+from keras.layers import Dense
+from keras.utils import to_categorical
+
+(train_images,train_labels),(test_images, test_labels) = mnist.load_data()
+
+print(train_images.shape[1:])
+#process the data
+#1. convert each image of shape 28*28 to 784 dimensional which will be fed to the network as a single feature
+dimData = np.prod(train_images.shape[1:])
+print(dimData)
+train_data = train_images.reshape(train_images.shape[0],dimData)
+test_data = test_images.reshape(test_images.shape[0],dimData)
+
+#convert data to float and scale values between 0 and 1
+train_data = train_data.astype('float')
+test_data = test_data.astype('float')
+#scale data
+train_data /=255.0
+test_data /=255.0
+#change the labels frominteger to one-hot encoding. to_categorical is doing the same thing as LabelEncoder()
+train_labels_one_hot = to_categorical(train_labels)
+test_labels_one_hot = to_categorical(test_labels)
+
+#creating network
+model = Sequential()
+model.add(Dense(512, activation='relu', input_shape=(dimData,)))
+model.add(Dense(512, activation='relu'))
+model.add(Dense(10, activation='softmax'))
+
+model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
+history = model.fit(train_data, train_labels_one_hot, batch_size=256, epochs=10, verbose=1,
+                   validation_data=(test_data, test_labels_one_hot))
+     
+Downloading data from https://storage.googleapis.com/tensorflow/tf-keras-datasets/mnist.npz
+11490434/11490434 [==============================] - 0s 0us/step
+(28, 28)
+784
+Epoch 1/10
+235/235 [==============================] - 12s 44ms/step - loss: 0.2961 - accuracy: 0.9083 - val_loss: 0.1600 - val_accuracy: 0.9516
+Epoch 2/10
+235/235 [==============================] - 6s 27ms/step - loss: 0.1008 - accuracy: 0.9691 - val_loss: 0.1444 - val_accuracy: 0.9535
+Epoch 3/10
+235/235 [==============================] - 7s 31ms/step - loss: 0.0644 - accuracy: 0.9795 - val_loss: 0.0812 - val_accuracy: 0.9740
+Epoch 4/10
+235/235 [==============================] - 7s 28ms/step - loss: 0.0453 - accuracy: 0.9858 - val_loss: 0.0628 - val_accuracy: 0.9802
+Epoch 5/10
+235/235 [==============================] - 8s 33ms/step - loss: 0.0322 - accuracy: 0.9894 - val_loss: 0.0780 - val_accuracy: 0.9754
+Epoch 6/10
+235/235 [==============================] - 6s 28ms/step - loss: 0.0231 - accuracy: 0.9926 - val_loss: 0.0680 - val_accuracy: 0.9804
+Epoch 7/10
+235/235 [==============================] - 8s 33ms/step - loss: 0.0167 - accuracy: 0.9946 - val_loss: 0.0627 - val_accuracy: 0.9811
+Epoch 8/10
+235/235 [==============================] - 7s 28ms/step - loss: 0.0129 - accuracy: 0.9959 - val_loss: 0.0659 - val_accuracy: 0.9825
+Epoch 9/10
+235/235 [==============================] - 8s 33ms/step - loss: 0.0087 - accuracy: 0.9975 - val_loss: 0.0974 - val_accuracy: 0.9760
+Epoch 10/10
+235/235 [==============================] - 7s 29ms/step - loss: 0.0071 - accuracy: 0.9980 - val_loss: 0.0762 - val_accuracy: 0.9814
+
+import matplotlib.pyplot as plt
+
+# Plot training & validation accuracy values
+plt.plot(history.history['accuracy'])
+plt.plot(history.history['val_accuracy'])
+plt.title('Model accuracy')
+plt.ylabel('Accuracy')
+plt.xlabel('Epoch')
+plt.legend(['Train', 'Test'], loc='upper left')
+plt.show()
+
+# Plot training & validation loss values
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.title('Model loss')
+plt.ylabel('Loss')
+plt.xlabel('Epoch')
+plt.legend(['Train', 'Test'], loc='upper left')
+plt.show()
+
+     
+
+
+
+import matplotlib.pyplot as plt
+
+# select a random image from test data
+image_index = 1234
+img = test_images[image_index]
+
+# plot the image
+plt.imshow(img, cmap='gray')
+
+# reshape image to 1D vector
+img = img.reshape((1, 784))
+
+# normalize pixel values
+img = img / 255.0
+
+# predict class of image
+result = model.predict(img)
+print("Predicted digit:", np.argmax(result))
+     
+1/1 [==============================] - 0s 192ms/step
+Predicted digit: 8
+
+
+from keras import Sequential
+from keras.datasets import mnist
+import numpy as np
+from keras.layers import Dense
+from keras.utils import to_categorical
+
+(train_images,train_labels),(test_images, test_labels) = mnist.load_data()
+
+print(train_images.shape[1:])
+#process the data
+#1. convert each image of shape 28*28 to 784 dimensional which will be fed to the network as a single feature
+dimData = np.prod(train_images.shape[1:])
+print(dimData)
+train_data = train_images.reshape(train_images.shape[0],dimData)
+test_data = test_images.reshape(test_images.shape[0],dimData)
+
+#convert data to float and scale values between 0 and 1
+train_data = train_data.astype('float')
+test_data = test_data.astype('float')
+#scale data
+train_data /=255.0
+test_data /=255.0
+#change the labels frominteger to one-hot encoding. to_categorical is doing the same thing as LabelEncoder()
+train_labels_one_hot = to_categorical(train_labels)
+test_labels_one_hot = to_categorical(test_labels)
+
+#creating network
+model = Sequential()
+model.add(Dense(512, activation='tanh', input_shape=(dimData,)))
+model.add(Dense(256, activation='tanh'))
+model.add(Dense(128, activation='tanh'))
+model.add(Dense(10, activation='softmax'))
+
+model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
+history = model.fit(train_data, train_labels_one_hot, batch_size=256, epochs=10, verbose=1,
+                   validation_data=(test_data, test_labels_one_hot))
+     
+(28, 28)
+784
+Epoch 1/10
+235/235 [==============================] - 11s 39ms/step - loss: 0.3381 - accuracy: 0.8973 - val_loss: 0.2139 - val_accuracy: 0.9368
+Epoch 2/10
+235/235 [==============================] - 6s 24ms/step - loss: 0.1461 - accuracy: 0.9560 - val_loss: 0.1632 - val_accuracy: 0.9495
+Epoch 3/10
+235/235 [==============================] - 6s 27ms/step - loss: 0.0968 - accuracy: 0.9708 - val_loss: 0.1189 - val_accuracy: 0.9630
+Epoch 4/10
+235/235 [==============================] - 6s 27ms/step - loss: 0.0694 - accuracy: 0.9788 - val_loss: 0.0963 - val_accuracy: 0.9697
+Epoch 5/10
+235/235 [==============================] - 6s 25ms/step - loss: 0.0521 - accuracy: 0.9842 - val_loss: 0.0706 - val_accuracy: 0.9766
+Epoch 6/10
+235/235 [==============================] - 7s 28ms/step - loss: 0.0379 - accuracy: 0.9889 - val_loss: 0.1094 - val_accuracy: 0.9641
+Epoch 7/10
+235/235 [==============================] - 6s 25ms/step - loss: 0.0290 - accuracy: 0.9907 - val_loss: 0.0688 - val_accuracy: 0.9791
+Epoch 8/10
+235/235 [==============================] - 7s 30ms/step - loss: 0.0206 - accuracy: 0.9939 - val_loss: 0.0658 - val_accuracy: 0.9785
+Epoch 9/10
+235/235 [==============================] - 11s 45ms/step - loss: 0.0159 - accuracy: 0.9954 - val_loss: 0.0897 - val_accuracy: 0.9740
+Epoch 10/10
+235/235 [==============================] - 6s 26ms/step - loss: 0.0117 - accuracy: 0.9970 - val_loss: 0.0935 - val_accuracy: 0.9730
+
+from keras import Sequential
+from keras.datasets import mnist
+import numpy as np
+from keras.layers import Dense
+from keras.utils import to_categorical
+
+(train_images,train_labels),(test_images, test_labels) = mnist.load_data()
+
+print(train_images.shape[1:])
+#process the data
+#1. convert each image of shape 28*28 to 784 dimensional which will be fed to the network as a single feature
+dimData = np.prod(train_images.shape[1:])
+print(dimData)
+train_data = train_images.reshape(train_images.shape[0],dimData)
+test_data = test_images.reshape(test_images.shape[0],dimData)
+
+#convert data to float and scale values between 0 and 1
+train_data = train_data.astype('float')
+test_data = test_data.astype('float')
+
+#change the labels frominteger to one-hot encoding. to_categorical is doing the same thing as LabelEncoder()
+train_labels_one_hot = to_categorical(train_labels)
+test_labels_one_hot = to_categorical(test_labels)
+
+#creating network
+model = Sequential()
+model.add(Dense(512, activation='relu', input_shape=(dimData,)))
+model.add(Dense(512, activation='relu'))
+model.add(Dense(10, activation='softmax'))
+
+model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
+history = model.fit(train_data, train_labels_one_hot, batch_size=256, epochs=10, verbose=1,
+                   validation_data=(test_data, test_labels_one_hot))
+test_loss, test_acc = model.evaluate(test_data, test_labels_one_hot, verbose=0)
+print(f'Test loss: {test_loss:.3f}, Test accuracy: {test_acc:.3f}')
+     
+(28, 28)
+784
+Epoch 1/10
+235/235 [==============================] - 9s 36ms/step - loss: 7.1491 - accuracy: 0.8677 - val_loss: 0.7785 - val_accuracy: 0.9087
+Epoch 2/10
+235/235 [==============================] - 7s 30ms/step - loss: 0.4086 - accuracy: 0.9458 - val_loss: 0.6582 - val_accuracy: 0.9045
+Epoch 3/10
+235/235 [==============================] - 7s 31ms/step - loss: 0.2493 - accuracy: 0.9581 - val_loss: 0.2749 - val_accuracy: 0.9565
+Epoch 4/10
+235/235 [==============================] - 8s 35ms/step - loss: 0.1989 - accuracy: 0.9678 - val_loss: 0.4394 - val_accuracy: 0.9549
+Epoch 5/10
+235/235 [==============================] - 7s 28ms/step - loss: 0.1865 - accuracy: 0.9710 - val_loss: 0.3683 - val_accuracy: 0.9534
+Epoch 6/10
+235/235 [==============================] - 8s 33ms/step - loss: 0.1456 - accuracy: 0.9756 - val_loss: 0.3580 - val_accuracy: 0.9586
+Epoch 7/10
+235/235 [==============================] - 7s 28ms/step - loss: 0.1459 - accuracy: 0.9781 - val_loss: 0.4030 - val_accuracy: 0.9602
+Epoch 8/10
+235/235 [==============================] - 8s 34ms/step - loss: 0.1318 - accuracy: 0.9801 - val_loss: 0.2813 - val_accuracy: 0.9703
+Epoch 9/10
+235/235 [==============================] - 6s 27ms/step - loss: 0.1343 - accuracy: 0.9810 - val_loss: 0.3325 - val_accuracy: 0.9664
+Epoch 10/10
+235/235 [==============================] - 8s 35ms/step - loss: 0.1081 - accuracy: 0.9842 - val_loss: 0.3502 - val_accuracy: 0.9690
+Test loss: 0.350, Test accuracy: 0.969
